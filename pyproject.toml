@@ -23,7 +23,9 @@ dependencies = [
     "redis",
     "toml",
     "asyncpg",
-    "SQLAlchemy"
+    "SQLAlchemy",
+    "alembic",
+    "types-toml"
 ]
 [project.optional-dependencies]
 test = [
@@ -33,7 +35,14 @@ lint = [
     "flake8",
     "mypy"
 ]
-
+format = [
+  "black"
+]
 
 [project.scripts]
 tgbot = "tgbot.main:cli"
+
+
+[[tool.mypy.overrides]]
+module = ['toml']
+ignore_missing_imports=true

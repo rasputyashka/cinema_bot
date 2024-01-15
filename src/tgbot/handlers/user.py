@@ -1,19 +1,17 @@
 from aiogram.types import Message
 from aiogram import Dispatcher
 
-from tgbot.repository.db import UserRepo
-from tgbot.models.user_dto import UserDTO
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from tgbot.db.models.user import User
 
 
-async def start(msg: Message, repo: UserRepo):
+async def start(msg: Message, session: AsyncSession):
     await msg.reply("Start command.")
     from_user = msg.from_user
     if from_user is not None:
-        await repo.create_user(UserDTO(from_user.id, from_user.username))
-
-
-async def get_movie(msg):
-    pass
+        await session.merge(User(id=from_user.id, username=from_user.username))
+        await session.commit()
 
 
 def register_user(dp: Dispatcher):
