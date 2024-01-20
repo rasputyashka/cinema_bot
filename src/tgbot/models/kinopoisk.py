@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass
@@ -28,8 +28,8 @@ class Content:
     movie_length: int
     # movie's release_year is a empty list
     release_years: ReleaseYears | None
-    genres: list[str] = field(default_factory=list)
-    countries: list[str] = field(default_factory=list)
+    genres: list[str]
+    countries: list[str]
 
     @classmethod
     def from_dict(cls, item) -> Content:
