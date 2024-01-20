@@ -2,6 +2,7 @@ import asyncio
 import logging
 import sys
 
+from aiohttp import ClientSession
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
@@ -9,6 +10,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from tgbot.config import load_config
 from tgbot.handlers.user import register_user
 from tgbot.middleware.db import DBMiddleware
+from tgbot.middleware.http_session import HTTPMiddleware
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +31,10 @@ async def main():
 
     register_user(dispatcher)
 
+    session = ClientSession(config.api.base_url)
+
     dispatcher.update.middleware(DBMiddleware(sessionmaker))
+    dispatcher.update.middleware(HTTPMiddleware(session))
 
     await dispatcher.start_polling(bot)
 

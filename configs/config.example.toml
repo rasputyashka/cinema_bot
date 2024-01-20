@@ -4,3 +4,6 @@ token = "BOT_TOKEN"
 [database]
 db_uri = "postgresql+psycopg2://scott:tiger@localhost/mydatabase"
 echo = true
+
+[api]
+base_url = ""

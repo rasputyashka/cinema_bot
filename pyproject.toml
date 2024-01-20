@@ -11,21 +11,22 @@ version = "0.0.1"
 authors = [
     { name = "rasput", email = "rasputyashka@gmail.com" },
 ]
-description = "Telegram bot example package"
+description = "telegram bot example package"
 requires-python = ">=3.10"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+    "programming language :: python :: 3",
+    "license :: osi approved :: mit license",
+    "operating system :: os independent",
 ]
 dependencies = [
     "aiogram",
     "redis",
     "toml",
     "asyncpg",
-    "SQLAlchemy",
+    "sqlalchemy",
     "alembic",
-    "types-toml"
+    "types-toml",
+    "aiohttp"
 ]
 [project.optional-dependencies]
 test = [
