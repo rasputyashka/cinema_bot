@@ -8,7 +8,7 @@ from aiogram.enums import ParseMode
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from tgbot.config import load_config
-from tgbot.handlers.user import register_user
+from tgbot.handlers.user import register_user_handlers
 from tgbot.middleware.db import DBMiddleware
 from tgbot.middleware.http_session import HTTPMiddleware
 
@@ -29,7 +29,7 @@ async def main():
     bot = Bot(config.bot.token, parse_mode=ParseMode.HTML)
     dispatcher = Dispatcher()
 
-    register_user(dispatcher)
+    register_user_handlers(dispatcher)
 
     session = ClientSession(config.api.base_url)
 
