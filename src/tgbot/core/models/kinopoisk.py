@@ -33,37 +33,37 @@ class Content:
 
     @classmethod
     def from_dict(cls, item) -> Content:
-        genres = [x['name'] for x in item['genres']]
-        countries = [x['name'] for x in item['countries']]
-        if release_years := item['releaseYears']:
-            start_year = release_years[0]['start']
-            end_year = release_years[0]['end']
+        genres = [x["name"] for x in item["genres"]]
+        countries = [x["name"] for x in item["countries"]]
+        if release_years := item["releaseYears"]:
+            start_year = release_years[0]["start"]
+            end_year = release_years[0]["end"]
             release_years = ReleaseYears(start=start_year, end=end_year)
         else:
             # by default, releaseYears is an empty list, not None
             release_years = None
 
-        if item['poster'] is None:
+        if item["poster"] is None:
             thumb_url = None
         else:
-            thumb_url = item['poster']['url']
+            thumb_url = item["poster"]["url"]
 
         return cls(
-            id=item['id'],
-            type=item['type'],
-            name=item['name'],
-            en_name=item['enName'],
-            alternative_name=item['alternativeName'],
-            short_descripton=item['shortDescription'],
-            description=item['description'],
+            id=item["id"],
+            type=item["type"],
+            name=item["name"],
+            en_name=item["enName"],
+            alternative_name=item["alternativeName"],
+            short_descripton=item["shortDescription"],
+            description=item["description"],
             thumb_url=thumb_url,
-            kinopoisk_rating=item['rating']['kp'],
-            year=item['year'],
+            kinopoisk_rating=item["rating"]["kp"],
+            year=item["year"],
             countries=countries,
-            is_series=item['isSeries'],
+            is_series=item["isSeries"],
             genres=genres,
             release_years=release_years,
-            movie_length=item['movieLength'],
-            status=item['status'],
-            series_length=item['seriesLength'],
+            movie_length=item["movieLength"],
+            status=item["status"],
+            series_length=item["seriesLength"],
         )

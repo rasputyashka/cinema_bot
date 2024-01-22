@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from aiohttp import ClientSession
 from aiogram.types import (
     Message,
     InlineQuery,
@@ -13,9 +12,10 @@ from aiogram.types import (
 from aiogram.filters import Command
 from aiogram import Dispatcher
 
-from tgbot.models.kinopoisk import Content
+from tgbot.core.models.kinopoisk import Content
 from tgbot.db.repos.base import BaseUserRepo
 from tgbot.core.models.user import UserDTO
+from tgbot.api.base import BaseAPIClient
 
 
 MOVIE_DESCRIPTION_TEMPLATE = """
@@ -60,16 +60,6 @@ async def start(msg: Message, repo: BaseUserRepo):
         )
 
 
-async def get_movies_articles(
-    http_session: ClientSession, title: str, page: int
-) -> list[Content]:
-    params = {"title": title, "limit": 10, "page": page}
-    async with http_session.get("/movie", params=params) as response:
-        resp_json = await response.json()
-        models = [Content.from_dict(item) for item in resp_json["docs"]]
-        return models
-
-
 def get_message(content: Content):
     if content.is_series:
         template = SERIES_DESCRIPTION_TEMPLATE
@@ -98,19 +88,10 @@ def get_message(content: Content):
         )
 
 
-async def get_rutube_link(
-    session: ClientSession, title: str, year: int
-) -> str:
-    params = {"title": title, "year": year}
-    async with session.get("/watch", params=params) as response:
-        response_json = await response.json()
-        return response_json["link"]
-
-
-async def get_movies(inline_query: InlineQuery, http_session: ClientSession):
+async def get_movies(inline_query: InlineQuery, api_client: BaseAPIClient):
     offset = int(inline_query.offset) if inline_query.offset else 1
-    all_content = await get_movies_articles(
-        http_session, inline_query.query, page=offset
+    all_content = await api_client.get_movies_and_series(
+        inline_query.query, limit=10, page=offset
     )
     results = []
     for content in all_content:
@@ -118,8 +99,8 @@ async def get_movies(inline_query: InlineQuery, http_session: ClientSession):
             if not content.is_series:
                 button = InlineKeyboardButton(
                     text="Смотреть на RUTUBE",
-                    url=await get_rutube_link(
-                        http_session, content.name, content.year
+                    url=await api_client.get_watch_link(
+                        content.name, content.year
                     ),
                 )
                 reply_markup = InlineKeyboardMarkup(inline_keyboard=[[button]])

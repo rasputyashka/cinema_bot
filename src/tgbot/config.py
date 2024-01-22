@@ -31,11 +31,11 @@ class APIConfig:
 
 def load_config(path: str | None = None) -> Config:
     if path is None:
-        path = os.getenv('CONFIG_PATH', '/usr/local/etc/cinemabot.toml')
+        path = os.getenv("CONFIG_PATH", "/usr/local/etc/cinemabot.toml")
     with open(path) as f:
         data = toml.load(f)
     return Config(
-        BotConfig(**data['tgbot']),
-        DBConfig(**data['database']),
-        APIConfig(**data['api']),
+        BotConfig(**data["tgbot"]),
+        DBConfig(**data["database"]),
+        APIConfig(**data["api"]),
     )
