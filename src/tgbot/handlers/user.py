@@ -12,43 +12,10 @@ from aiogram.types import (
 from aiogram.filters import Command
 from aiogram import Dispatcher
 
-from tgbot.core.models.kinopoisk import Content
 from tgbot.db.repos.base import BaseUserRepo
 from tgbot.core.models.user import UserDTO
+from tgbot.core.presenters.content import ContentPresenter
 from tgbot.api.base import BaseAPIClient
-
-
-MOVIE_DESCRIPTION_TEMPLATE = """
-Название: <code>{movie_name} / {en_name}</code>
-
-Описание: <b>{description}</b>
-
-Жанры: <i>{genres}</i>
-
-Страны выпуска: {countries}
-
-Год выпуска: <code>{year}</code>
-
-Рейтинг кинопоиска: <b>{kinopoisk_rating}</b>
-
-Длительность: <code>{duration}</code> минут
-"""
-
-SERIES_DESCRIPTION_TEMPLATE = """
-Название: <code>{series_name} / {en_name}</code>
-
-Описание: <b>{description}</b>
-
-Жанры: <i>{genres}</i>
-
-Страны выпуска: {countries}
-
-Годы выхода: <code>{start_year} - {end_year}</code>
-
-Рейтинг кинопоиска: <b>{kinopoisk_rating}</b>
-
-Длительность серии: ~<code>{episode_duration}</code> минут
-"""
 
 
 async def start(msg: Message, repo: BaseUserRepo):
@@ -57,34 +24,6 @@ async def start(msg: Message, repo: BaseUserRepo):
     if from_user:
         await repo.add_user(
             UserDTO(id=from_user.id, username=from_user.username, uses=0)
-        )
-
-
-def get_message(content: Content):
-    if content.is_series:
-        template = SERIES_DESCRIPTION_TEMPLATE
-        return template.format(
-            series_name=content.name,
-            en_name=content.en_name or content.alternative_name,
-            description=content.description or "Отсутствует",
-            genres=", ".join(content.genres),
-            countries=", ".join(content.countries),
-            start_year=content.release_years.start,  # type: ignore
-            end_year=content.release_years.end or "н.в.",  # type: ignore
-            kinopoisk_rating=content.kinopoisk_rating,
-            episode_duration=content.series_length,
-        )
-    else:
-        template = MOVIE_DESCRIPTION_TEMPLATE
-        return template.format(
-            movie_name=content.name,
-            en_name=content.en_name or content.alternative_name,
-            description=content.description or "Отсутствует",
-            genres=", ".join(content.genres),
-            countries=", ".join(content.countries),
-            year=content.year,
-            kinopoisk_rating=content.kinopoisk_rating,
-            duration=content.movie_length,
         )
 
 
@@ -111,7 +50,7 @@ async def get_movies(inline_query: InlineQuery, api_client: BaseAPIClient):
                 title=content.name,
                 description=content.short_descripton,
                 input_message_content=InputTextMessageContent(
-                    message_text=get_message(content),
+                    message_text=ContentPresenter(content).get_message(),
                     parse_mode="html",
                     link_preview_options=LinkPreviewOptions(
                         url=content.thumb_url, show_above_text=True
